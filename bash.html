@@ -43,13 +43,13 @@
     <div class="frm">
         <label>Chave</label>
         <input type="text" id="edtChave" value="1652">
+        <label>Número de Criptografias</label>
+        <input type="text" id="edtNum" value="17">
         <label>Entrada</label>
-        <textarea id="edtEntrada" cols="30" rows="10"></textarea>
+        <textarea id="edtEntrada" cols="30" rows="10">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</textarea>
         <button id="btnCrip">Criptografar</button>
-        <label>Saída</label>
         <textarea id="edtSaida" cols="30" rows="10"></textarea>
         <button id="btnReverter">Descriptografar</button>
-        <label> Reverter</label>
         <textarea id="edtReverter" cols="30" rows="10"></textarea>
     </div>
     
@@ -57,34 +57,48 @@
 
 <script>
     var key = document.getElementById('edtChave')
+    var num = document.getElementById('edtNum')
     var inp = document.getElementById('edtEntrada')
     var out = document.getElementById('edtSaida')
     var rev = document.getElementById('edtReverter')
 
     document.getElementById('btnCrip').addEventListener('click',()=>{
-        out.value = crip(inp.value, key.value)
+        const x = parseInt(num.value)
+        let sai = inp.value
+
+        for(let i=0; i<x; i++){
+            sai = crip(sai, key.value)
+        }
+        out.value = sai
     })
 
     document.getElementById('btnReverter').addEventListener('click',()=>{
-        rev.value = crip(out.value, key.value,false)
+//        rev.value = crip(out.value, key.value,false)
+        const x = parseInt(num.value)
+        let sai = out.value
+
+        for(let i=0; i<x; i++){
+            sai = crip(sai, key.value, false)
+        }
+        rev.value = sai        
 
     })
 
     function crip(txt,key,ord=true){
         let resp = ''
         let cripKey = []
+        let keyI = 0
+        let up = true
+        
         for(let i=0; i<key.length; i++){
             cripKey.push(key.charCodeAt(i))
         }
-        let keyI = 0
-        let up = true
 
         for(let i=0; i<txt.length; i++){
             const letter = txt.charCodeAt(i)
-            let newL = letter + cripKey[keyI]
-            if(!ord){
-                newL = letter - cripKey[keyI]
-            }
+
+            let newL = ord ? letter + cripKey[keyI] : letter - cripKey[keyI]
+
             if(newL >=512){ newL = newL % 512 }
 
             keyI += up ? 1 : -1            
