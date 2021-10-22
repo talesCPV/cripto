@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cripto 2.0</title>
+    <style>
+        .frm{
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .frm input{
+            border: none;
+            border-bottom: solid 2px #2293d4;
+            margin: 10px 0;
+        }
+
+        .frm textarea{
+            border: solid 2px #2293d4;
+            resize: none;
+        }
+
+        .frm button{
+            padding: 10px;
+            cursor: pointer;
+            background-color:  #356283;
+            color: #FFFFFF;
+            font-size: large;
+            margin: 10px 0;
+        }
+
+        .frm button:hover{
+            background-color:  #5398ca;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="frm">
+        <label>Chave</label>
+        <input type="text" id="edtChave" value="1652">
+        <label>Entrada</label>
+        <textarea id="edtEntrada" cols="30" rows="10"></textarea>
+        <button id="btnCrip">Criptografar</button>
+        <label>Saída</label>
+        <textarea id="edtSaida" cols="30" rows="10"></textarea>
+        <button id="btnReverter">Descriptografar</button>
+        <label> Reverter</label>
+        <textarea id="edtReverter" cols="30" rows="10"></textarea>
+    </div>
+    
+</body>
+
+<script>
+    var key = document.getElementById('edtChave')
+    var inp = document.getElementById('edtEntrada')
+    var out = document.getElementById('edtSaida')
+    var rev = document.getElementById('edtReverter')
+
+    document.getElementById('btnCrip').addEventListener('click',()=>{
+        out.value = crip(inp.value, key.value)
+    })
+
+    document.getElementById('btnReverter').addEventListener('click',()=>{
+        rev.value = crip(out.value, key.value,false)
+
+    })
+
+    function crip(txt,key,ord=true){
+        let resp = ''
+        let cripKey = []
+        for(let i=0; i<key.length; i++){
+            cripKey.push(key.charCodeAt(i))
+        }
+        let keyI = 0
+        let up = true
+
+        for(let i=0; i<txt.length; i++){
+            const letter = txt.charCodeAt(i)
+            let newL = letter + cripKey[keyI]
+            if(!ord){
+                newL = letter - cripKey[keyI]
+            }
+            if(newL >=512){ newL = newL % 512 }
+
+            keyI += up ? 1 : -1            
+            if(keyI < 0){ 
+                up = true 
+                keyI = 1
+            }
+            if(keyI > cripKey.length-1){
+                 up = false 
+                 keyI = cripKey.length-1
+                }
+            resp += String.fromCharCode(newL)
+        }
+
+        return resp
+
+    }
+
+</script>
+
+</html>
