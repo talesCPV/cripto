@@ -52,7 +52,7 @@
         <button id="btnReverter">Descriptografar</button>
         <textarea id="edtReverter" cols="30" rows="10"></textarea>
     </div>
-    
+    <button id="teste">Teste</button>
 </body>
 
 <script>
@@ -62,34 +62,33 @@
     var out = document.getElementById('edtSaida')
     var rev = document.getElementById('edtReverter')
 
-    document.getElementById('btnCrip').addEventListener('click',()=>{
-        const x = parseInt(num.value)
-        let sai = inp.value
+    document.getElementById('teste').addEventListener('click',()=>{
+        console.log(inp.value)
+        console.log(inp.value[0])
+        console.log(inp.value.substring(1,inp.value.length))
+    })
 
-        for(let i=0; i<x; i++){
-            sai = crip(sai, key.value)
-        }
+
+    document.getElementById('btnCrip').addEventListener('click',()=>{
+        const n = parseInt(num.value)
+        sai = crip(inp.value, key.value, n)
         out.value = sai
     })
 
     document.getElementById('btnReverter').addEventListener('click',()=>{
-//        rev.value = crip(out.value, key.value,false)
-        const x = parseInt(num.value)
-        let sai = out.value
-
-        for(let i=0; i<x; i++){
-            sai = crip(sai, key.value, false)
-        }
+        const n = parseInt(num.value)
+        sai = crip(out.value, key.value, n, false)      
         rev.value = sai        
+        
 
     })
 
-    function crip(txt,key,ord=true){
+    function crip(txt,key,n=1,ord=true){
         let resp = ''
         let cripKey = []
         let keyI = 0
         let up = true
-        
+
         for(let i=0; i<key.length; i++){
             cripKey.push(key.charCodeAt(i))
         }
@@ -111,6 +110,11 @@
                  keyI = cripKey.length-1
                 }
             resp += String.fromCharCode(newL)
+        }
+
+        n--
+        if(n>0){
+            resp = crip(resp,key,n,ord)
         }
 
         return resp
