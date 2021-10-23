@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cripto 2.1</title>
+    <style>
+        .frm{
+            display: flex;
+            flex-direction: column;
+            max-width: 1200px;
+            margin: 50px auto;
+        }
+
+        .frm input{
+            border: none;
+            border-bottom: solid 2px #2293d4;
+            margin: 10px 0;
+        }
+
+        .frm textarea{
+            border: solid 2px #2293d4;
+            resize: none;
+        }
+
+        .frm button{
+            padding: 10px;
+            cursor: pointer;
+            background-color:  #356283;
+            color: #FFFFFF;
+            font-size: large;
+            margin: 10px 0;
+        }
+
+        .frm button:hover{
+            background-color:  #5398ca;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="frm">
+        <label>Chave</label>
+        <input type="text" id="edtChave" value="1652">
+        <label>Entrada</label>
+        <textarea id="edtEntrada" cols="30" rows="10">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</textarea>
+        <button id="btnCrip">Criptografar</button>
+        <textarea id="edtSaida" cols="30" rows="10"></textarea>
+        <button id="btnDecrip">Descriptografar</button>
+        <textarea id="edtReverter" cols="30" rows="10"></textarea>
+    </div>
+
+</body>
+
+<script>
+    var key = document.getElementById('edtChave')
+    var inp = document.getElementById('edtEntrada')
+    var out = document.getElementById('edtSaida')
+    var rev = document.getElementById('edtReverter')
+
+    document.getElementById('btnCrip').addEventListener('click',()=>{        
+        out.value = crip(inp.value, key.value)
+    })
+
+    document.getElementById('btnDecrip').addEventListener('click',()=>{        
+        rev.value = crip(out.value, key.value,true)                    
+    })
+
+    function crip(txt,key,decrip=false){
+
+        let n = decrip ? txt.charCodeAt(0) : getN(txt,key)
+        let ret = decrip ? '' : String.fromCharCode(n)
+        txt = decrip ? txt.substring(1,txt.length) : txt
+        
+        function getN(txt,key){
+            txt += key
+            let N = 0
+            for(let i=0; i< txt.length; i++){
+                N += txt.charCodeAt(i)
+            }
+            N %= 511
+            N = (N==0) ? 1 : N
+            return N
+        }
+
+        function convert(txt,key,n,decrip){
+            let resp = ''
+            let cripKey = []            
+            let keyI = 0
+            let up = true
+
+            for(let i=0; i<key.length; i++){
+                cripKey.push(key.charCodeAt(i))
+            }
+
+            for(let i=0; i<txt.length; i++){
+                const letter = txt.charCodeAt(i)
+
+                let newL = decrip ? letter - cripKey[keyI] : letter + cripKey[keyI]
+
+                if(newL >=512){ newL = newL % 512 }
+
+                keyI += up ? 1 : -1            
+                if(keyI < 0){ 
+                    up = true 
+                    keyI = 1
+                }
+                if(keyI > cripKey.length-1){
+                    up = false 
+                    keyI = cripKey.length-1
+                    }
+                resp += String.fromCharCode(newL)
+            }
+
+            n--
+            if(n>0){
+                resp = convert(resp,key,n,decrip)
+            }  
+              
+            return resp        
+        }
+        return ret + convert(txt,key,n,decrip)        
+    }
+
+</script>
+
+</html>
